@@ -222,27 +222,36 @@ export default function Dashboard() {
             <h2 className="dashboard-heading">Build Your Resume</h2>
 
             {/* Template Selection */}
-            <div className="section-card">
-              <h3 className="section-title">📋 Choose Resume Template</h3>
-              <div className="template-selector">
-                <div 
-                  className={`template-option ${selectedTemplate === 'template1' ? 'selected' : ''}`}
-                  onClick={() => setSelectedTemplate('template1')}
-                >
-                  <div className="template-preview">Template 1 - Classic</div>
-                  <p>Professional single-column layout</p>
-                  {selectedTemplate === 'template1' && <span className="selected-badge">✓ Selected</span>}
-                </div>
-                <div 
-                  className={`template-option ${selectedTemplate === 'template2' ? 'selected' : ''}`}
-                  onClick={() => setSelectedTemplate('template2')}
-                >
-                  <div className="template-preview">Template 2 - Modern</div>
-                  <p>Two-column sidebar design</p>
-                  {selectedTemplate === 'template2' && <span className="selected-badge">✓ Selected</span>}
-                </div>
-              </div>
-            </div>
+<div className="section-card">
+  <h3 className="section-title">📋 Choose Resume Template</h3>
+  <div className="template-selector">
+    <div 
+      className={`template-option ${selectedTemplate === 'template1' ? 'selected' : ''}`}
+      onClick={() => {
+        console.log('✅ Selected Template 1');
+        setSelectedTemplate('template1');
+        localStorage.setItem(`template_${currentUser.id}`, 'template1');
+      }}
+    >
+      <div className="template-preview">Template 1 - Classic</div>
+      <p>Professional single-column layout</p>
+      {selectedTemplate === 'template1' && <span className="selected-badge">✓ Selected</span>}
+    </div>
+    <div 
+      className={`template-option ${selectedTemplate === 'template2' ? 'selected' : ''}`}
+      onClick={() => {
+        console.log('✅ Selected Template 2');
+        setSelectedTemplate('template2');
+        localStorage.setItem(`template_${currentUser.id}`, 'template2');
+      }}
+    >
+      <div className="template-preview">Template 2 - Modern</div>
+      <p>Two-column sidebar design</p>
+      {selectedTemplate === 'template2' && <span className="selected-badge">✓ Selected</span>}
+    </div>
+  </div>
+</div>
+
 
             {/* Personal Information */}
             <div className="section-card">
