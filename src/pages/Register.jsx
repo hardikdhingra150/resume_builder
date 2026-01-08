@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -8,105 +8,140 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup, googleSignIn } = useAuth();
   const navigate = useNavigate();
+  const { signup, googleSignIn } = useAuth(); // Changed from signInWithGoogle to googleSignIn
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-  
+
     if (password !== confirmPassword) {
       return setError('Passwords do not match');
     }
-  
+
+    if (password.length < 6) {
+      return setError('Password must be at least 6 characters');
+    }
+
     try {
       setError('');
       setLoading(true);
       await signup(email, password);
+      console.log('Signup successful!');
       
-      console.log('User created successfully!');
+      // Navigate to dashboard
       navigate('/dashboard');
-    } catch (error) {
-      console.error('Registration error:', error);
-      setError('Failed to create account: ' + error.message);
+      
+    } catch (err) {
+      console.error('Signup error:', err);
+      
+      if (err.message.includes('already registered') || err.message.includes('already exists')) {
+        setError('This email is already registered. Please login instead.');
+      } else if (err.message.includes('Invalid email')) {
+        setError('Invalid email address.');
+      } else if (err.message.includes('Password')) {
+        setError('Password is too weak. Use at least 6 characters.');
+      } else {
+        setError(err.message || 'Failed to create account. Please try again.');
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
+  }
 
-  const handleGoogleSignIn = async () => {
+  async function handleGoogleSignIn() {
     try {
       setError('');
       setLoading(true);
-      await googleSignIn();
-      // Note: Google sign-in will redirect, so no need to navigate here
-    } catch (error) {
-      setError('Failed to sign in with Google.');
+      await googleSignIn(); // Changed from signInWithGoogle to googleSignIn
+      // Google OAuth will redirect automatically
+    } catch (err) {
+      console.error('Google signin error:', err);
+      setError(err.message || 'Failed to sign in with Google.');
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="auth-page">
+    <div className="auth-container">
+      <div className="auth-orb auth-orb-1"></div>
+      <div className="auth-orb auth-orb-2"></div>
+      <div className="auth-orb auth-orb-3"></div>
+      
       <div className="auth-card">
-        <div className="auth-header">
-          <h2 className="auth-title">Create Account</h2>
-          <p className="auth-subtitle">Start building your AI-powered resume</p>
-        </div>
+        <div className="auth-card-accent"></div>
         
-        {error && <div className="error-box">{error}</div>}
+        <div className="auth-dots auth-dots-left">
+          <div className="auth-dot"></div>
+          <div className="auth-dot"></div>
+          <div className="auth-dot"></div>
+          <div className="auth-dot"></div>
+          <div className="auth-dot"></div>
+        </div>
+        <div className="auth-dots auth-dots-right">
+          <div className="auth-dot"></div>
+          <div className="auth-dot"></div>
+          <div className="auth-dot"></div>
+          <div className="auth-dot"></div>
+          <div className="auth-dot"></div>
+        </div>
+
+        <h1 className="auth-title">Create Account</h1>
+        <p className="auth-subtitle">Start building your AI-powered resume</p>
+
+        {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-field">
-            <label className="field-label">Email</label>
+          <div className="auth-input-group">
+            <label className="auth-label">Email</label>
             <input
               type="email"
+              className="auth-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="field-input"
-              placeholder="your@email.com"
               required
+              placeholder="your@email.com"
+              disabled={loading}
             />
           </div>
 
-          <div className="form-field">
-            <label className="field-label">Password</label>
+          <div className="auth-input-group">
+            <label className="auth-label">Password (min 6 characters)</label>
             <input
               type="password"
+              className="auth-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="field-input"
-              placeholder="••••••••"
               required
               minLength={6}
+              placeholder="••••••••"
+              disabled={loading}
             />
           </div>
 
-          <div className="form-field">
-            <label className="field-label">Confirm Password</label>
+          <div className="auth-input-group">
+            <label className="auth-label">Confirm Password</label>
             <input
               type="password"
+              className="auth-input"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="field-input"
-              placeholder="••••••••"
               required
               minLength={6}
+              placeholder="••••••••"
+              disabled={loading}
             />
           </div>
 
-          <button type="submit" disabled={loading} className="auth-btn">
+          <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
 
-        <div className="divider">
-          <span>or</span>
+        <div className="auth-divider">
+          <span className="auth-divider-text">or</span>
         </div>
 
-        <button 
-          onClick={handleGoogleSignIn} 
-          disabled={loading}
-          className="google-btn"
-        >
+        <button onClick={handleGoogleSignIn} className="google-btn" disabled={loading}>
           <svg className="google-icon" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -116,9 +151,8 @@ export default function Register() {
           Continue with Google
         </button>
 
-        <p className="auth-footer">
-          Already have an account?{' '}
-          <Link to="/login" className="auth-link">Sign In</Link>
+        <p className="auth-link">
+          Already have an account? <Link to="/login">Sign In</Link>
         </p>
       </div>
     </div>
