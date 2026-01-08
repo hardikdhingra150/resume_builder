@@ -8,7 +8,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, signInWithGoogle } = useAuth();
+  const { login, googleSignIn } = useAuth(); // Changed from signInWithGoogle to googleSignIn
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,7 +21,6 @@ export default function Login() {
     } catch (err) {
       console.error('Login error:', err);
       
-      // Supabase error handling
       if (err.message.includes('Invalid login credentials')) {
         setError('Invalid email or password. Please try again.');
       } else if (err.message.includes('Email not confirmed')) {
@@ -40,18 +39,17 @@ export default function Login() {
     try {
       setError('');
       setLoading(true);
-      await signInWithGoogle();
+      await googleSignIn(); // Changed from signInWithGoogle to googleSignIn
       // Google OAuth will redirect automatically
     } catch (err) {
       console.error('Google signin error:', err);
-      setError('Failed to sign in with Google. Please try again.');
+      setError(err.message || 'Failed to sign in with Google.');
       setLoading(false);
     }
   }
 
   return (
     <div className="auth-container">
-      {/* Decorative floating elements */}
       <div className="auth-orb auth-orb-1"></div>
       <div className="auth-orb auth-orb-2"></div>
       <div className="auth-orb auth-orb-3"></div>
@@ -59,7 +57,6 @@ export default function Login() {
       <div className="auth-card">
         <div className="auth-card-accent"></div>
         
-        {/* Side dots decoration */}
         <div className="auth-dots auth-dots-left">
           <div className="auth-dot"></div>
           <div className="auth-dot"></div>
