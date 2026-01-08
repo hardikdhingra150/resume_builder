@@ -10,7 +10,17 @@ function ProtectedRoute({ children }) {
   const { currentUser, loading } = useAuth();
   
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#f5f0e8'
+      }}>
+        <div style={{ fontSize: '20px', color: '#7d1d3f' }}>Loading...</div>
+      </div>
+    );
   }
   
   return currentUser ? children : <Navigate to="/login" />;
@@ -24,6 +34,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/register" element={<Signup />} /> {/* Add this - redirect register to signup */}
           <Route 
             path="/dashboard" 
             element={
