@@ -1,55 +1,29 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import Landing from './pages/Landing';
 import Login from './pages/Login';
-import Register from './pages/Register';
+import Signup from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Resume from './pages/Resume';
+import Home from './pages/Home';
 
-// Protected Route Component
 function ProtectedRoute({ children }) {
-  const { currentUser } = useAuth();
+  const { currentUser, loading } = useAuth();
   
-  if (!currentUser) {
-    return <Navigate to="/login" />;
+  if (loading) {
+    return <div>Loading...</div>;
   }
   
-  return children;
-}
-
-// Public Route (redirect to dashboard if already logged in)
-function PublicRoute({ children }) {
-  const { currentUser } = useAuth();
-  
-  if (currentUser) {
-    return <Navigate to="/dashboard" />;
-  }
-  
-  return children;
+  return currentUser ? children : <Navigate to="/login" />;
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <AuthProvider>
+      <Router>
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route 
-            path="/login" 
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            } 
-          />
-          <Route 
-            path="/register" 
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            } 
-          />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route 
             path="/dashboard" 
             element={
@@ -67,8 +41,8 @@ function App() {
             } 
           />
         </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+      </Router>
+    </AuthProvider>
   );
 }
 
