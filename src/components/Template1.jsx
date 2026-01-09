@@ -1,106 +1,121 @@
 export default function Template1({ data }) {
-    const { profile, projects, achievements, experience, education, skills } = data || {};
-  
-    return (
-      <div id="resume-template" className="template1">
-        <div className="t1-header">
-          <h1 className="t1-name">{profile?.name || 'Your Name'}</h1>
-          <div className="t1-contact">
-            {profile?.phone && <span>{profile.phone}</span>}
-            {profile?.phone && profile?.email && <span> | </span>}
-            {profile?.email && <span>{profile.email}</span>}
-            {profile?.location && <span> | {profile.location}</span>}
+  const { profile, projects, achievements, experience, education, skills } = data;
+
+  return (
+    <div className="template1">
+      {/* Header */}
+      <div className="header">
+        <h1 className="name">{profile.name || 'Your Name'}</h1>
+        <div className="contact-info">
+          {profile.phone && <span>{profile.phone}</span>}
+          {profile.email && <span>{profile.email}</span>}
+          {profile.location && <span>{profile.location}</span>}
+        </div>
+      </div>
+
+      {/* Profile/Summary */}
+      {profile.summary && (
+        <div className="section">
+          <h2 className="section-title">Profile Highlights</h2>
+          <div className="summary-content">
+            {profile.summary.split('\n').filter(line => line.trim()).map((line, idx) => (
+              <div key={idx} className="summary-item">{line}</div>
+            ))}
           </div>
         </div>
-  
-        {profile?.summary && (
-          <div className="t1-section">
-            <h2 className="t1-heading">Profile Highlights</h2>
-            <div className="t1-divider"></div>
-            <ul className="t1-list">
-              {profile.summary.split('\n').filter(Boolean).map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-  
-        {education?.length > 0 && education[0]?.institution && (
-          <div className="t1-section">
-            <h2 className="t1-heading">Education</h2>
-            <div className="t1-divider"></div>
-            {education.map((edu, i) => (
-              <div key={i} className="t1-edu">
-                <div className="t1-edu-row">
-                  <div>
-                    <h3 className="t1-edu-name">{edu.institution}</h3>
-                    <p className="t1-edu-degree">{edu.degree}</p>
-                  </div>
-                  <div className="t1-edu-right">
-                    <p>{edu.details}</p>
-                    <p>{edu.year}</p>
-                  </div>
+      )}
+
+      {/* Education */}
+      {education?.some(edu => edu.institution || edu.degree) && (
+        <div className="section">
+          <h2 className="section-title">Education</h2>
+          {education.map((edu, idx) => (
+            (edu.institution || edu.degree) && (
+              <div key={idx} className="education-item">
+                <div className="education-header">
+                  <strong>{edu.institution}</strong>
                 </div>
+                <div>{edu.degree}</div>
+                {edu.year && <div className="year">{edu.year}</div>}
+                {edu.details && <div>{edu.details}</div>}
               </div>
-            ))}
-          </div>
-        )}
-  
-        {skills && (
-          <div className="t1-section">
-            <h2 className="t1-heading">Skills</h2>
-            <div className="t1-divider"></div>
-            <p className="t1-text"><strong>Languages:</strong> {skills}</p>
-          </div>
-        )}
-  
-        {experience?.length > 0 && experience[0]?.company && (
-          <div className="t1-section">
-            <h2 className="t1-heading">Experience</h2>
-            <div className="t1-divider"></div>
-            {experience.map((exp, i) => (
-              <div key={i} className="t1-exp">
-                <div className="t1-exp-row">
-                  <h3 className="t1-exp-company">{exp.company} | <span className="t1-italic">Intern</span></h3>
-                  <p className="t1-exp-right">{exp.duration}</p>
+            )
+          ))}
+        </div>
+      )}
+
+      {/* Skills */}
+      {skills && (
+        <div className="section">
+          <h2 className="section-title">Skills</h2>
+          <div className="skills-content">{skills}</div>
+        </div>
+      )}
+
+      {/* Experience - Only if actual data exists */}
+      {experience?.some(exp => exp.company && exp.role) && (
+        <div className="section">
+          <h2 className="section-title">Experience</h2>
+          {experience.map((exp, idx) => (
+            (exp.company && exp.role) && (
+              <div key={idx} className="experience-item">
+                <div className="exp-header">
+                  <strong>{exp.role}</strong> | {exp.company}
                 </div>
-                <p className="t1-exp-role">{exp.role}</p>
-                <ul className="t1-list">
-                  {exp.description?.split('\n').filter(Boolean).map((item, j) => (
-                    <li key={j}>{item}</li>
+                {exp.duration && <div className="duration">{exp.duration}</div>}
+                {exp.description && exp.description.split('\n').filter(line => line.trim()).map((line, i) => (
+                  <div key={i} className="desc-item">{line}</div>
+                ))}
+              </div>
+            )
+          ))}
+        </div>
+      )}
+
+      {/* Projects */}
+      {projects?.some(proj => proj.title) && (
+        <div className="section">
+          <h2 className="section-title">Projects</h2>
+          {projects.map((project, idx) => (
+            project.title && (
+              <div key={idx} className="project-item">
+                <div className="project-header">
+                  <strong>{project.title}</strong>
+                </div>
+                {project.tech && <div className="tech">Tech: {project.tech}</div>}
+                {project.description && project.description.split('\n').filter(line => line.trim()).map((line, i) => (
+                  <div key={i} className="desc-item">{line}</div>
+                ))}
+                {project.link && (
+                  <div className="link">
+                    <a href={project.link} target="_blank" rel="noopener noreferrer">
+                      🔗 {project.link}
+                    </a>
+                  </div>
+                )}
+              </div>
+            )
+          ))}
+        </div>
+      )}
+
+      {/* Achievements */}
+      {achievements?.some(ach => ach.text) && (
+        <div className="section">
+          <h2 className="section-title">Achievements</h2>
+          <ul className="achievements-list">
+            {achievements.map((achievement, idx) => (
+              achievement.text && (
+                <li key={idx}>
+                  {achievement.text.split('\n').filter(line => line.trim()).map((line, i) => (
+                    <div key={i}>{line}</div>
                   ))}
-                </ul>
-              </div>
+                </li>
+              )
             ))}
-          </div>
-        )}
-  
-        {projects?.length > 0 && projects[0]?.title && (
-          <div className="t1-section">
-            <h2 className="t1-heading">Projects</h2>
-            <div className="t1-divider"></div>
-            {projects.map((proj, i) => (
-              <div key={i} className="t1-project">
-                <h3 className="t1-project-title">{proj.title}</h3>
-                <p className="t1-text">{proj.description}</p>
-                {proj.tech && <p className="t1-text"><strong>Technologies:</strong> {proj.tech}</p>}
-              </div>
-            ))}
-          </div>
-        )}
-  
-        {achievements?.length > 0 && achievements[0]?.text && (
-          <div className="t1-section">
-            <h2 className="t1-heading">Achievements & Extracurricular Activities</h2>
-            <div className="t1-divider"></div>
-            <ul className="t1-list">
-              {achievements.map((ach, i) => (
-                <li key={i}>{ach.text}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  }
-  
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
