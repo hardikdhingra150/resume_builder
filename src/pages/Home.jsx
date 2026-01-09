@@ -1,76 +1,103 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Home() {
-  const navigate = useNavigate();
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   return (
-    <div className="home-container">
+    <div className="landing-page">
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="nav-container">
+          <div className="logo">
+            <span className="logo-icon">✨</span>
+            AI Resume Builder
+          </div>
+          <div className="nav-buttons">
+            <Link to="/login" className="nav-btn secondary">Login</Link>
+            <Link to="/register" className="nav-btn primary">Get Started</Link>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <div className="home-hero">
-        <div className="home-content">
-          <div className="home-badge">✨ ResumeAI</div>
-          <h1 className="home-title">
-            Build Your Perfect Resume<br />
-            <span className="home-title-accent">in Minutes</span>
+      <section className={`hero ${isVisible ? 'visible' : ''}`}>
+        <div className="hero-content">
+          <div className="hero-badge">AI-Powered Resume Builder</div>
+          <h1 className="hero-title">
+            Build <span className="highlight">ATS-Friendly</span><br/>
+            Resumes in Minutes
           </h1>
-          <p className="home-subtitle">
-            Let AI help you create a professional resume that stands out. Add your details, enhance with AI, and download instantly.
+          <p className="hero-subtitle">
+            Transform your experience into powerful bullet points with AI. 
+            Professional templates that get you hired faster.
           </p>
           
-          <div className="home-buttons">
-            <button onClick={() => navigate('/signup')} className="home-btn-primary">
-              Start Building Free
-            </button>
-            <button onClick={() => navigate('/login')} className="home-btn-secondary">
-              Sign In
-            </button>
+          <div className="hero-cta">
+            <Link to="/register" className="cta-primary">
+              Create My Resume
+            </Link>
+            <Link to="/dashboard" className="cta-secondary">
+              View Demo
+            </Link>
           </div>
 
-          {/* Stats */}
-          <div className="home-stats">
-            <div className="home-stat">
-              <div className="home-stat-number">1000+</div>
-              <div className="home-stat-label">Users</div>
+          <div className="stats-grid">
+            <div className="stat-item">
+              <div className="stat-number">10K+</div>
+              <div>Resumes Created</div>
             </div>
-            <div className="home-stat">
-              <div className="home-stat-number">95%</div>
-              <div className="home-stat-label">Success Rate</div>
+            <div className="stat-item">
+              <div className="stat-number">95%</div>
+              <div>ATS Pass Rate</div>
             </div>
-            <div className="home-stat">
-              <div className="home-stat-number">2 min</div>
-              <div className="home-stat-label">Avg Time</div>
+            <div className="stat-item">
+              <div className="stat-number">2x</div>
+              <div>Faster Interviews</div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Features */}
-      <div className="home-features">
-        <div className="home-features-container">
-          <div className="home-feature">
-            <div className="home-feature-icon">✨</div>
-            <h3 className="home-feature-title">AI Enhancement</h3>
-            <p className="home-feature-desc">Transform your text into professional, impactful content</p>
-          </div>
-
-          <div className="home-feature">
-            <div className="home-feature-icon">🎯</div>
-            <h3 className="home-feature-title">ATS Friendly</h3>
-            <p className="home-feature-desc">Get past automated screening with optimized formatting</p>
-          </div>
-
-          <div className="home-feature">
-            <div className="home-feature-icon">⚡</div>
-            <h3 className="home-feature-title">Quick Export</h3>
-            <p className="home-feature-desc">Download PDF instantly and update anytime</p>
+        <div className="hero-preview">
+          <div className="preview-card">
+            <div className="preview-header">
+              <div className="preview-name">Harsh Dhingra</div>
+              <div className="preview-badge">AI Enhanced</div>
+            </div>
+            <div className="preview-role">Full Stack Developer</div>
+            <div className="preview-section">
+              <div className="section-title">Projects</div>
+              <div className="bullet">• Built blockchain gaming platform</div>
+              <div className="bullet">• Developed NFT marketplace</div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Footer */}
-      <div className="home-footer">
-        <p>© 2026 ResumeAI. Made with AI.</p>
-      </div>
+      <section className="features-section">
+        <h2 className="section-title">Everything You Need</h2>
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon">🤖</div>
+            <h3>AI Enhancement</h3>
+            <p>Transform raw text into ATS-optimized bullet points</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">📄</div>
+            <h3>2 Pro Templates</h3>
+            <p>Classic & Modern layouts that pass ATS filters</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">⚡</div>
+            <h3>5 Minutes</h3>
+            <p>From blank page to PDF download in under 5 minutes</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
