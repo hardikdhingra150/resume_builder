@@ -45,7 +45,6 @@ export default function Dashboard() {
       if (error) {
         if (error.code === 'PGRST116') {
           console.log('No data yet, starting fresh');
-          // Load template from localStorage if available
           const savedTemplate = localStorage.getItem(`template_${currentUser.id}`);
           if (savedTemplate) setSelectedTemplate(savedTemplate);
           return;
@@ -61,13 +60,11 @@ export default function Dashboard() {
         if (data.education && data.education.length > 0) setEducation(data.education);
         if (data.skills) setSkills(data.skills);
         
-        // Try to load template from DB first, then localStorage, then default
         const savedTemplate = data.template || localStorage.getItem(`template_${currentUser.id}`) || 'template1';
         setSelectedTemplate(savedTemplate);
       }
     } catch (error) {
       console.error('Error loading data:', error);
-      // Load template from localStorage as fallback
       const savedTemplate = localStorage.getItem(`template_${currentUser.id}`);
       if (savedTemplate) setSelectedTemplate(savedTemplate);
     }
@@ -99,7 +96,6 @@ export default function Dashboard() {
 
       console.log('🔵 Data to save:', dataToSave);
 
-      // Save main data
       const { error: mainError } = await supabase
         .from('users')
         .upsert(dataToSave, { 
@@ -109,7 +105,6 @@ export default function Dashboard() {
 
       if (mainError) throw mainError;
 
-      // Try to save template to DB
       try {
         const { error: templateError } = await supabase
           .from('users')
@@ -117,13 +112,12 @@ export default function Dashboard() {
           .eq('id', currentUser.id);
         
         if (templateError) {
-          console.warn('Template save to DB failed (cache issue), using localStorage backup:', templateError.message);
+          console.warn('Template save to DB failed, using localStorage backup:', templateError.message);
         }
       } catch (templateError) {
         console.warn('Template save failed, using localStorage backup');
       }
 
-      // Always save template to localStorage as backup
       localStorage.setItem(`template_${currentUser.id}`, selectedTemplate);
 
       console.log('✅ Data saved successfully!');
@@ -136,7 +130,13 @@ export default function Dashboard() {
     }
   };
 
+  // Enhanced with bullet points output
   const enhanceAchievement = async (index) => {
+    if (!achievements[index].text.trim()) {
+      alert('Please enter some text before enhancing');
+      return;
+    }
+    
     setEnhancing(true);
     try {
       const enhanced = await enhanceContent(achievements[index].text, 'achievement');
@@ -145,12 +145,17 @@ export default function Dashboard() {
       setAchievements(newAchievements);
     } catch (error) {
       console.error('Enhancement error:', error);
-      alert('Error enhancing content. Please try again.');
+      alert('Error enhancing content: ' + (error.message || 'Please try again'));
     }
     setEnhancing(false);
   };
 
   const enhanceProject = async (index) => {
+    if (!projects[index].description.trim()) {
+      alert('Please enter project description before enhancing');
+      return;
+    }
+    
     setEnhancing(true);
     try {
       const enhanced = await enhanceContent(projects[index].description, 'project');
@@ -159,7 +164,45 @@ export default function Dashboard() {
       setProjects(newProjects);
     } catch (error) {
       console.error('Enhancement error:', error);
-      alert('Error enhancing content. Please try again.');
+      alert('Error enhancing content: ' + (error.message || 'Please try again'));
+    }
+    setEnhancing(false);
+  };
+
+  // New: Enhance experience description
+  const enhanceExperience = async (index) => {
+    if (!experience[index].description.trim()) {
+      alert('Please enter experience description before enhancing');
+      return;
+    }
+    
+    setEnhancing(true);
+    try {
+      const enhanced = await enhanceContent(experience[index].description, 'experience');
+      const newExp = [...experience];
+      newExp[index].description = enhanced;
+      setExperience(newExp);
+    } catch (error) {
+      console.error('Enhancement error:', error);
+      alert('Error enhancing content: ' + (error.message || 'Please try again'));
+    }
+    setEnhancing(false);
+  };
+
+  // New: Enhance summary
+  const enhanceSummary = async () => {
+    if (!profile.summary.trim()) {
+      alert('Please enter a summary before enhancing');
+      return;
+    }
+    
+    setEnhancing(true);
+    try {
+      const enhanced = await enhanceContent(profile.summary, 'summary');
+      setProfile({ ...profile, summary: enhanced });
+    } catch (error) {
+      console.error('Enhancement error:', error);
+      alert('Error enhancing content: ' + (error.message || 'Please try again'));
     }
     setEnhancing(false);
   };
@@ -222,36 +265,35 @@ export default function Dashboard() {
             <h2 className="dashboard-heading">Build Your Resume</h2>
 
             {/* Template Selection */}
-<div className="section-card">
-  <h3 className="section-title">📋 Choose Resume Template</h3>
-  <div className="template-selector">
-    <div 
-      className={`template-option ${selectedTemplate === 'template1' ? 'selected' : ''}`}
-      onClick={() => {
-        console.log('✅ Selected Template 1');
-        setSelectedTemplate('template1');
-        localStorage.setItem(`template_${currentUser.id}`, 'template1');
-      }}
-    >
-      <div className="template-preview">Template 1 - Classic</div>
-      <p>Professional single-column layout</p>
-      {selectedTemplate === 'template1' && <span className="selected-badge">✓ Selected</span>}
-    </div>
-    <div 
-      className={`template-option ${selectedTemplate === 'template2' ? 'selected' : ''}`}
-      onClick={() => {
-        console.log('✅ Selected Template 2');
-        setSelectedTemplate('template2');
-        localStorage.setItem(`template_${currentUser.id}`, 'template2');
-      }}
-    >
-      <div className="template-preview">Template 2 - Modern</div>
-      <p>Two-column sidebar design</p>
-      {selectedTemplate === 'template2' && <span className="selected-badge">✓ Selected</span>}
-    </div>
-  </div>
-</div>
-
+            <div className="section-card">
+              <h3 className="section-title">📋 Choose Resume Template</h3>
+              <div className="template-selector">
+                <div 
+                  className={`template-option ${selectedTemplate === 'template1' ? 'selected' : ''}`}
+                  onClick={() => {
+                    console.log('✅ Selected Template 1');
+                    setSelectedTemplate('template1');
+                    localStorage.setItem(`template_${currentUser.id}`, 'template1');
+                  }}
+                >
+                  <div className="template-preview">Template 1 - Classic</div>
+                  <p>Professional single-column layout</p>
+                  {selectedTemplate === 'template1' && <span className="selected-badge">✓ Selected</span>}
+                </div>
+                <div 
+                  className={`template-option ${selectedTemplate === 'template2' ? 'selected' : ''}`}
+                  onClick={() => {
+                    console.log('✅ Selected Template 2');
+                    setSelectedTemplate('template2');
+                    localStorage.setItem(`template_${currentUser.id}`, 'template2');
+                  }}
+                >
+                  <div className="template-preview">Template 2 - Modern</div>
+                  <p>Two-column sidebar design</p>
+                  {selectedTemplate === 'template2' && <span className="selected-badge">✓ Selected</span>}
+                </div>
+              </div>
+            </div>
 
             {/* Personal Information */}
             <div className="section-card">
@@ -282,17 +324,26 @@ export default function Dashboard() {
                   type="text"
                   placeholder="Location"
                   value={profile.location}
-                  onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                   className="input-field"
                 />
               </div>
               <textarea
-                placeholder="Professional Summary (for Template 1, enter each point on a new line. For Template 2, write a paragraph)"
+                placeholder="Professional Summary - Describe your expertise and career goals"
                 value={profile.summary}
                 onChange={(e) => setProfile({ ...profile, summary: e.target.value })}
                 className="textarea-field"
                 rows="4"
+                style={{ whiteSpace: 'pre-line' }}
               />
+              <button
+                onClick={enhanceSummary}
+                disabled={enhancing || !profile.summary}
+                className="enhance-btn"
+                style={{ marginTop: '12px' }}
+              >
+                {enhancing ? '⏳ Enhancing...' : '✨ Enhance Summary with AI'}
+              </button>
             </div>
 
             {/* Projects */}
@@ -326,7 +377,7 @@ export default function Dashboard() {
                     style={{ marginBottom: '12px' }}
                   />
                   <textarea
-                    placeholder="Project Description"
+                    placeholder="Project Description - Describe what you built and the impact"
                     value={project.description}
                     onChange={(e) => {
                       const newProjects = [...projects];
@@ -334,12 +385,12 @@ export default function Dashboard() {
                       setProjects(newProjects);
                     }}
                     className="textarea-field"
-                    rows="3"
-                    style={{ marginTop: 0, marginBottom: '12px' }}
+                    rows="4"
+                    style={{ marginTop: 0, marginBottom: '12px', whiteSpace: 'pre-line' }}
                   />
                   <input
                     type="text"
-                    placeholder="Technologies Used"
+                    placeholder="Technologies Used (e.g., React, Node.js, MongoDB)"
                     value={project.tech}
                     onChange={(e) => {
                       const newProjects = [...projects];
@@ -366,7 +417,7 @@ export default function Dashboard() {
                     disabled={enhancing || !project.description}
                     className="enhance-btn"
                   >
-                    {enhancing ? '⏳ Enhancing...' : '✨ Enhance with AI'}
+                    {enhancing ? '⏳ Enhancing...' : '✨ Enhance with AI (Bullet Points)'}
                   </button>
                 </div>
               ))}
@@ -391,7 +442,7 @@ export default function Dashboard() {
                     )}
                   </div>
                   <textarea
-                    placeholder="Describe your achievement"
+                    placeholder="Describe your achievement - awards, recognition, competition wins, etc."
                     value={achievement.text}
                     onChange={(e) => {
                       const newAchievements = [...achievements];
@@ -399,15 +450,15 @@ export default function Dashboard() {
                       setAchievements(newAchievements);
                     }}
                     className="textarea-field"
-                    rows="2"
-                    style={{ marginTop: 0, marginBottom: '12px' }}
+                    rows="3"
+                    style={{ marginTop: 0, marginBottom: '12px', whiteSpace: 'pre-line' }}
                   />
                   <button
                     onClick={() => enhanceAchievement(index)}
                     disabled={enhancing || !achievement.text}
                     className="enhance-btn"
                   >
-                    {enhancing ? '⏳ Enhancing...' : '✨ Enhance with AI'}
+                    {enhancing ? '⏳ Enhancing...' : '✨ Enhance with AI (Bullet Points)'}
                   </button>
                   {achievement.enhanced && (
                     <span className="enhanced-badge">✓ Enhanced</span>
@@ -471,7 +522,7 @@ export default function Dashboard() {
                     style={{ marginBottom: '12px' }}
                   />
                   <textarea
-                    placeholder="Description (for Template 1, enter each point on a new line)"
+                    placeholder="Description - Your responsibilities and achievements in this role"
                     value={exp.description}
                     onChange={(e) => {
                       const newExp = [...experience];
@@ -479,9 +530,16 @@ export default function Dashboard() {
                       setExperience(newExp);
                     }}
                     className="textarea-field"
-                    rows="3"
-                    style={{ marginTop: 0 }}
+                    rows="4"
+                    style={{ marginTop: 0, marginBottom: '12px', whiteSpace: 'pre-line' }}
                   />
+                  <button
+                    onClick={() => enhanceExperience(index)}
+                    disabled={enhancing || !exp.description}
+                    className="enhance-btn"
+                  >
+                    {enhancing ? '⏳ Enhancing...' : '✨ Enhance with AI (Bullet Points)'}
+                  </button>
                 </div>
               ))}
             </div>
@@ -541,7 +599,7 @@ export default function Dashboard() {
                     style={{ marginBottom: '12px' }}
                   />
                   <textarea
-                    placeholder="Additional Details (location, CGPA, etc.)"
+                    placeholder="Additional Details (location, CGPA, relevant coursework, etc.)"
                     value={edu.details}
                     onChange={(e) => {
                       const newEdu = [...education];
@@ -560,7 +618,7 @@ export default function Dashboard() {
             <div className="section-card">
               <h3 className="section-title">Skills</h3>
               <textarea
-                placeholder="Enter skills separated by commas (e.g., React, Node.js, Python, MongoDB)"
+                placeholder="Enter skills separated by commas (e.g., React, Node.js, Python, MongoDB, Machine Learning)"
                 value={skills}
                 onChange={(e) => setSkills(e.target.value)}
                 className="textarea-field"
