@@ -27,22 +27,22 @@ export default function Home() {
       {/* Hero Section */}
       <section className={`hero ${isVisible ? 'visible' : ''}`}>
         <div className="hero-content">
-          <div className="hero-badge">AI-Powered Resume Builder</div>
+          <div className="hero-badge">AI-Powered</div>
           <h1 className="hero-title">
             Build <span className="highlight">ATS-Friendly</span><br/>
-            Resumes in Minutes
+            Resumes in <span className="highlight">Minutes</span>
           </h1>
           <p className="hero-subtitle">
-            Transform your experience into powerful bullet points with AI. 
-            Professional templates that get you hired faster.
+            Transform raw experience into powerful, recruiter-approved bullet points. 
+            2 professional templates that get you hired faster.
           </p>
           
           <div className="hero-cta">
             <Link to="/register" className="cta-primary">
-              Create My Resume
+              ✨ Create My Resume
             </Link>
             <Link to="/dashboard" className="cta-secondary">
-              View Demo
+              👁️ Live Demo
             </Link>
           </div>
 
@@ -62,40 +62,59 @@ export default function Home() {
           </div>
         </div>
 
+        {/* GENERIC Demo Resume - No personal name */}
         <div className="hero-preview">
           <div className="preview-card">
             <div className="preview-header">
-              <div className="preview-name">Harsh Dhingra</div>
+              <div className="preview-title">Full Stack Developer</div>
               <div className="preview-badge">AI Enhanced</div>
             </div>
-            <div className="preview-role">Full Stack Developer</div>
+            <div className="preview-role">Software Engineer</div>
             <div className="preview-section">
-              <div className="section-title">Projects</div>
-              <div className="bullet">• Built blockchain gaming platform</div>
-              <div className="bullet">• Developed NFT marketplace</div>
+              <div className="section-title">Recent Projects</div>
+              <div className="bullet">• Built blockchain gaming platform with React & Web3</div>
+              <div className="bullet">• Developed NFT marketplace on Polygon network</div>
+              <div className="bullet">• Created real-time dashboard with Next.js & Firebase</div>
+            </div>
+            <div className="preview-footer">
+              <div className="tech-stack">
+                React • Node.js • Solidity • Firebase • Tailwind
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Features - Fixed spacing & better design */}
       <section className="features-section">
-        <h2 className="section-title">Everything You Need</h2>
+        <h2 className="section-title">Why Developers Love Us</h2>
         <div className="features-grid">
           <div className="feature-card">
             <div className="feature-icon">🤖</div>
-            <h3>AI Enhancement</h3>
-            <p>Transform raw text into ATS-optimized bullet points</p>
+            <h3>AI Bullet Magic</h3>
+            <p>Raw text → Professional bullet points in seconds. ATS-optimized automatically.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">📄</div>
             <h3>2 Pro Templates</h3>
-            <p>Classic & Modern layouts that pass ATS filters</p>
+            <p>Classic single-column + Modern two-column. Both recruiter approved.</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">⚡</div>
-            <h3>5 Minutes</h3>
-            <p>From blank page to PDF download in under 5 minutes</p>
+            <h3>Lightning Fast</h3>
+            <p>Blank page to PDF download in under 5 minutes. No design skills needed.</p>
           </div>
+          <div className="feature-card">
+            <div className="feature-icon">💾</div>
+            <h3>Auto-Save</h3>
+            <p>Everything saves automatically. Pick up where you left off anytime.</p>
+          </div>
+        </div>
+        
+        <div className="cta-bottom">
+          <Link to="/register" className="cta-primary large">
+            Start Building Your Resume → 
+          </Link>
         </div>
       </section>
     </div>
