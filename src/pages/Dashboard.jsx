@@ -5,12 +5,15 @@ import { enhanceContent } from '../utils/geminiHelper';
 import { useNavigate } from 'react-router-dom';
 import Template1 from '../components/Template1';
 import Template2 from '../components/Template2';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 export default function Dashboard() {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [enhancing, setEnhancing] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState('template1');
   const [showPreview, setShowPreview] = useState(false);
 
@@ -130,7 +133,65 @@ export default function Dashboard() {
     }
   };
 
-  // Enhanced with bullet points output
+  // PDF Download Function
+  const handleDownloadPDF = async () => {
+    try {
+      setIsGeneratingPDF(true);
+      
+      // Get the visible resume template
+      const resumeElement = document.querySelector('.template1, .template2');
+      
+      if (!resumeElement) {
+        alert('Please preview your resume first before downloading');
+        setIsGeneratingPDF(false);
+        return;
+      }
+
+      // Generate high-quality canvas
+      const canvas = await html2canvas(resumeElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        windowWidth: 800,
+        windowHeight: resumeElement.scrollHeight
+      });
+
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // Add first page
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      // Add additional pages if content overflows
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      // Download with proper filename
+      const fileName = `${profile.name || 'Resume'}_${selectedTemplate === 'template1' ? 'Classic' : 'Modern'}.pdf`;
+      pdf.save(fileName);
+      
+      setIsGeneratingPDF(false);
+      alert('✅ Resume downloaded successfully!');
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('❌ Failed to generate PDF. Please try again.');
+      setIsGeneratingPDF(false);
+    }
+  };
+
   const enhanceAchievement = async (index) => {
     if (!achievements[index].text.trim()) {
       alert('Please enter some text before enhancing');
@@ -169,7 +230,6 @@ export default function Dashboard() {
     setEnhancing(false);
   };
 
-  // New: Enhance experience description
   const enhanceExperience = async (index) => {
     if (!experience[index].description.trim()) {
       alert('Please enter experience description before enhancing');
@@ -189,7 +249,6 @@ export default function Dashboard() {
     setEnhancing(false);
   };
 
-  // New: Enhance summary
   const enhanceSummary = async () => {
     if (!profile.summary.trim()) {
       alert('Please enter a summary before enhancing');
@@ -233,6 +292,17 @@ export default function Dashboard() {
               <button onClick={() => navigate('/resume')} className="view-resume-btn">
                 📄 Full View
               </button>
+              <button 
+                onClick={handleDownloadPDF} 
+                disabled={isGeneratingPDF || !showPreview}
+                className="view-resume-btn"
+                style={{ 
+                  background: isGeneratingPDF ? '#ccc' : '#8b4513',
+                  color: 'white'
+                }}
+              >
+                {isGeneratingPDF ? '⏳ Generating...' : '📥 Download PDF'}
+              </button>
               <button onClick={logout} className="logout-btn">
                 Logout
               </button>
@@ -257,10 +327,21 @@ export default function Dashboard() {
               <button onClick={() => setShowPreview(false)} className="save-btn">
                 ← Back to Edit
               </button>
+              <button 
+                onClick={handleDownloadPDF} 
+                disabled={isGeneratingPDF}
+                className="save-btn"
+                style={{ 
+                  background: isGeneratingPDF ? '#ccc' : '#8b4513',
+                  marginLeft: '1rem'
+                }}
+              >
+                {isGeneratingPDF ? '⏳ Generating PDF...' : '📥 Download as PDF'}
+              </button>
             </div>
           </div>
         ) : (
-          /* EDIT MODE */
+          /* EDIT MODE - All your existing form fields remain the same */
           <>
             <h2 className="dashboard-heading">Build Your Resume</h2>
 
@@ -627,7 +708,6 @@ export default function Dashboard() {
               />
             </div>
 
-            {/* Save Button */}
             <div className="save-container">
               <button
                 onClick={saveData}
