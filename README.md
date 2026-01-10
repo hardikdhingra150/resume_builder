@@ -1,16 +1,38 @@
-# React + Vite
+AI-powered resume builder with professional templates, Google login, and PDF export.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+✨ Demo
+https://resume-builder-nu-blush.vercel.app/
 
-Currently, two official plugins are available:
+🛠 Tech
+React + Vite + Supabase + Gemini AI + Vercel
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🚀 Setup
+npm install
+npm run dev
 
-## React Compiler
+.env:
+VITE_SUPABASE_URL=your_url
+VITE_SUPABASE_ANON_KEY=your_key
+VITE_GEMINI_API_KEY=your_key
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+☁️ Deploy
+vercel --prod
+vercel.json:
+json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+}
 
-## Expanding the ESLint configuration
+📁 Files
+src/
+├── components/     # Template1.jsx, Template2.jsx
+├── pages/          # Home.jsx, Dashboard.jsx
+├── contexts/       # AuthContext.jsx
+└── utils/          # geminiHelper.js
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🎯 Features
+AI bullet enhancement (Gemini)
+2 templates (Classic + Modern)
+PDF export with styling
+Google OAuth + Supabase
+Auto-save to database
